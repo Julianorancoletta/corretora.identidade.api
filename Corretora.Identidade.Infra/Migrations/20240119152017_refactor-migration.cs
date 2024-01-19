@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Corretora.Identidade.Infra.Migrations
 {
     /// <inheritdoc />
-    public partial class primeiramigration : Migration
+    public partial class refactormigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -57,7 +57,7 @@ namespace Corretora.Identidade.Infra.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Token = table.Column<Guid>(type: "uuid", nullable: false),
-                    NomeUsuario = table.Column<string>(type: "text", nullable: true),
+                    NomeUsuario = table.Column<string>(type: "text", nullable: false),
                     DataExpiracao = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>

@@ -1,4 +1,5 @@
 ﻿using Corretora.Identidade.API.Models;
+using Corretora.Identidade.Core.Domain;
 using Microsoft.AspNetCore.Identity;
 
 namespace Corretora.Identidade.API.Application.Services

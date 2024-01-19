@@ -1,8 +1,8 @@
 ﻿using Corretora.Identidade.API.Extensions;
 using Corretora.Identidade.API.Models;
-using Corretora.Identidade.Infra.Context;
+using Corretora.Identidade.Core.Domain;
+using Corretora.Identidade.Infra.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NetDevPack.Security.Jwt.Core.Interfaces;
@@ -16,17 +16,16 @@ namespace Corretora.Identidade.API.Application.Services
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly AppTokenSettings _appTokenSettings;
-        private readonly AppDbContext _appDbContext;
-        //private readonly IJsonWebKeySetService _jwksService;
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IJwtService _jwksService;
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public IdentidadeService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, IOptions<AppTokenSettings> appTokenSettings, AppDbContext appDbContext, IJwtService jwtService, IHttpContextAccessor contextAccessor)
+        public IdentidadeService(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager, IOptions<AppTokenSettings> appTokenSettings, IRefreshTokenRepository refreshTokenRepository, IJwtService jwtService, IHttpContextAccessor contextAccessor)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _appTokenSettings = appTokenSettings.Value;
-            _appDbContext = appDbContext;
+            _refreshTokenRepository = refreshTokenRepository;
             _jwksService = jwtService;
             _contextAccessor = contextAccessor;
         }
@@ -115,17 +114,16 @@ namespace Corretora.Identidade.API.Application.Services
                 DataExpiracao = DateTime.UtcNow.AddHours(_appTokenSettings.HorasExpiracaoRefreshToken)
             };
 
-            _appDbContext.RefreshTokens.RemoveRange(_appDbContext.RefreshTokens.Where(u => u.NomeUsuario == cpf));
-            await _appDbContext.RefreshTokens.AddAsync(refreshToken);
+            _refreshTokenRepository.DeleteByCpf(cpf);
+            await _refreshTokenRepository.AddAsync(refreshToken);
 
-            await _appDbContext.SaveChangesAsync();
+            await _refreshTokenRepository.UnitOfWork.Commit();
             return refreshToken;
         }
 
         public async Task<RefreshToken?> ObterRedreshToken(Guid refreshToken)
         {
-            var token = await _appDbContext.RefreshTokens.AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Token == refreshToken);
+            var token = await _refreshTokenRepository.GetRefreshTokenByTokenAsync(refreshToken);
 
             return token != null && token.DataExpiracao.ToLocalTime() > DateTime.Now
                 ? token

@@ -13,13 +13,13 @@ namespace Corretora.Identidade.API.Configuration
             services.Configure<AppTokenSettings>(appSettingsSection);
 
             services.AddJwksManager()
-                .PersistKeysToDatabaseStore<AppDbContext>();
+                .PersistKeysToDatabaseStore<IdentidadeContext>();
 
-            services.ConfigureProviderForContext<AppDbContext>(ProviderConfiguration.DetectDatabase(configuration));
+            services.ConfigureProviderForContext<IdentidadeContext>(ProviderConfiguration.DetectDatabase(configuration));
 
             services.AddDefaultIdentity<IdentityUser>()
                 .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<AppDbContext>()
+                .AddEntityFrameworkStores<IdentidadeContext>()
                 .AddDefaultTokenProviders();
         }
     }

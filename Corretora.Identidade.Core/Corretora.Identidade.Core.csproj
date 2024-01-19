@@ -19,8 +19,4 @@
         <!--<PackageReference Include="WebAPI" Version="2.0.0" />-->
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="DTO\" />
-    </ItemGroup>
-
 </Project>

@@ -1,8 +1,9 @@
-﻿namespace Corretora.Identidade.API.Models
+﻿using Delivery.Core.DomainObjects;
+
+namespace Corretora.Identidade.Core.Domain
 {
-    public record class RefreshToken
+    public sealed class RefreshToken : Entity, IAggregateRoot
     {
-        public Guid Id { get; init; } = Guid.NewGuid();
         public Guid Token { get; init; } = Guid.NewGuid();
         public string? NomeUsuario { get; init; }
         public DateTime DataExpiracao { get; init; }

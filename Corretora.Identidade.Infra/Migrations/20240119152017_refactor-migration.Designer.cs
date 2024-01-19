@@ -11,9 +11,9 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Corretora.Identidade.Infra.Migrations
 {
-    [DbContext(typeof(AppDbContext))]
-    [Migration("20240112204635_primeira-migration")]
-    partial class primeiramigration
+    [DbContext(typeof(IdentidadeContext))]
+    [Migration("20240119152017_refactor-migration")]
+    partial class refactormigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace Corretora.Identidade.Infra.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Corretora.Identidade.API.Models.RefreshToken", b =>
+            modelBuilder.Entity("Corretora.Identidade.Core.Domain.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -35,6 +35,7 @@ namespace Corretora.Identidade.Infra.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("NomeUsuario")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid>("Token")
@@ -42,7 +43,7 @@ namespace Corretora.Identidade.Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
