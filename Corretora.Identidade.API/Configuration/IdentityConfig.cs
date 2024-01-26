@@ -2,9 +2,11 @@
 using Corretora.Identidade.Infra.Context;
 using Delivery.Core.DatabaseFlavor;
 using Microsoft.AspNetCore.Identity;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Corretora.Identidade.API.Configuration
 {
+    [ExcludeFromCodeCoverage]
     public static class IdentityConfig
     {
         public static void AddIdentityConfiguration(this IServiceCollection services, IConfiguration configuration)

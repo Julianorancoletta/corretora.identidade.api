@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Corretora.Identidade.Infra.Migrations
 {
     [DbContext(typeof(IdentidadeContext))]
-    [Migration("20240119152017_refactor-migration")]
-    partial class refactormigration
+    [Migration("20240126233008_migration-inicial")]
+    partial class migrationinicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -1,7 +1,9 @@
 ﻿using Delivery.WebAPI.Core.Identity;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Corretora.Identidade.API.Configuration
 {
+    [ExcludeFromCodeCoverage]
     public static class ApiConfig
     {
         public static void AddApiConfiguration(this IServiceCollection services)

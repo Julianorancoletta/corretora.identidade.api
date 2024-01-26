@@ -1,5 +1,6 @@
 ﻿using Corretora.Identidade.API.Extensions;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Corretora.Identidade.API.Models
 {

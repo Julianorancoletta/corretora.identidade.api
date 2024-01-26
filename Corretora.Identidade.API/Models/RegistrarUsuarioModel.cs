@@ -1,8 +1,10 @@
 ﻿using Corretora.Identidade.API.Extensions;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Corretora.Identidade.API.Models
 {
+    [ExcludeFromCodeCoverage]
     public sealed class RegistrarUsuarioModel
     {
         [Required(ErrorMessage = "O campo {0} é obrigatório")]

@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corretora.Identidade.CrossC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corretora.Identidade.Infra", "Corretora.Identidade.Infra\Corretora.Identidade.Infra.csproj", "{02A431FD-433A-4AE4-8949-0D717300FE61}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corretora.Identidade.API.Tests", "Corretora.Identidade.API.Tests\Corretora.Identidade.API.Tests.csproj", "{7576683F-BF4A-477A-B21E-AEE3BE016F94}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{02A431FD-433A-4AE4-8949-0D717300FE61}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02A431FD-433A-4AE4-8949-0D717300FE61}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02A431FD-433A-4AE4-8949-0D717300FE61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7576683F-BF4A-477A-B21E-AEE3BE016F94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7576683F-BF4A-477A-B21E-AEE3BE016F94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7576683F-BF4A-477A-B21E-AEE3BE016F94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7576683F-BF4A-477A-B21E-AEE3BE016F94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

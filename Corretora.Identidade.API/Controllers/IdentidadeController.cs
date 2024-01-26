@@ -1,10 +1,11 @@
-﻿using Corretora.Identidade.API.Application.Services;
-using Corretora.Identidade.API.Models;
+﻿using Corretora.Identidade.API.Models;
+using Corretora.Identidade.API.Services;
 using Delivery.WebAPI.Core.Controllers;
 using Delivery.WebAPI.Core.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Corretora.Identidade.API.Controllers
 {
@@ -13,18 +14,22 @@ namespace Corretora.Identidade.API.Controllers
     public sealed class IdentidadeController : MainController
     {
         private readonly IIdentidadeService _identidadeService;
+        private readonly ILogger<IdentidadeController> _logger;
 
-        public IdentidadeController(IIdentidadeService identidadeService)
+        [ExcludeFromCodeCoverage]
+        public IdentidadeController(IIdentidadeService identidadeService, ILogger<IdentidadeController> logger)
         {
             _identidadeService = identidadeService;
+            _logger = logger;
         }
 
         [AllowAnonymous]
         [HttpPost("registrar")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Registrar(RegistrarUsuarioModel registrarUsuario)
+        [ProducesResponseType(typeof(UsuarioResponstaLoginModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RegistrarUsuarioAsync(RegistrarUsuarioModel registrarUsuario)
         {
+            _logger.LogInformation($"Registrando usuário CPF '{registrarUsuario.Cpf}'");
             var usuario = new IdentityUser
             {
                 UserName = registrarUsuario.Cpf,
@@ -36,11 +41,13 @@ namespace Corretora.Identidade.API.Controllers
 
             if (resultado.Succeeded)
             {
-                return CustomResponse(await _identidadeService.GerarJwt(registrarUsuario.Cpf!));
+                return CustomResponse(await _identidadeService.GerarJwtAsync(registrarUsuario.Cpf!));
             }
 
+            _logger.LogError($"Falha ao registrar usuário CPF '{registrarUsuario.Cpf}'");
             foreach (var erro in resultado.Errors)
             {
+                _logger.LogError($"Descrição do erro do CPF '{registrarUsuario.Cpf}' ==> {erro.Description}");
                 AddErrorToStack(erro.Description);
             }
 
@@ -49,35 +56,38 @@ namespace Corretora.Identidade.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("autenticar")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Autenticar(AutenticarUsuarioModel autenticarUsuario)
+        [ProducesResponseType(typeof(UsuarioResponstaLoginModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> AutenticarUsuarioAsync(AutenticarUsuarioModel autenticarUsuario)
         {
-            if (!ModelState.IsValid) CustomResponse(ModelState);
-
+            _logger.LogInformation($"Autenticando usuário CPF '{autenticarUsuario.Cpf}'");
             var resultado = await _identidadeService.ObterSignInManager().PasswordSignInAsync(autenticarUsuario.Cpf, autenticarUsuario.Senha, false, true);
 
             if (resultado.Succeeded)
             {
-                return CustomResponse(await _identidadeService.GerarJwt(autenticarUsuario.Cpf));
+                return CustomResponse(await _identidadeService.GerarJwtAsync(autenticarUsuario.Cpf));
             }
 
+            _logger.LogError($"Falha ao autenticar usuário CPF '{autenticarUsuario.Cpf}'");
             if (resultado.IsLockedOut)
             {
+                _logger.LogError($"Descrição do erro do CPF '{autenticarUsuario.Cpf}' ==> Usuário temporariamente bloqueado.");
                 AddErrorToStack("Usuário temporariamente bloqueado.");
                 return CustomResponse();
             }
 
+            _logger.LogError($"Descrição do erro do CPF '{autenticarUsuario.Cpf}' ==> Usuário ou Senha incorretos.");
             AddErrorToStack("Usuário ou Senha incorretos.");
             return CustomResponse();
         }
 
         [AllowAnonymous]
         [HttpPost("refresh-token")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
+        [ProducesResponseType(typeof(UsuarioResponstaLoginModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RefreshTokenAsync([FromBody] string refreshToken)
         {
+            _logger.LogInformation($"Refreshtoken '{refreshToken}'");
             if (string.IsNullOrWhiteSpace(refreshToken))
             {
                 AddErrorToStack("Refresh Token não informado");
@@ -85,26 +95,32 @@ namespace Corretora.Identidade.API.Controllers
             }
 
             var token = await _identidadeService.ObterRedreshToken(Guid.Parse(refreshToken));
+            _logger.LogInformation($"Refreshtoken usuário de nome '{token?.NomeUsuario}'");
 
             if (token == null)
             {
+                _logger.LogError($"Falha refreshtoken '{refreshToken}' ==> Refresh Token expirado");
                 AddErrorToStack("Refresh Token expirado");
                 return CustomResponse();
             }
 
-            return CustomResponse(await _identidadeService.GerarJwt(token.NomeUsuario!));
+            return CustomResponse(await _identidadeService.GerarJwtAsync(token.NomeUsuario!));
         }
 
         [ClaimsAuthorize("Identidade", "Admin")]
         [HttpPost("adicionar-claims")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> AdicionarClaims(AdicionarClaimModel adicionarClaim)
         {
+            _logger.LogInformation($"Adicionando claim para o CPF '{adicionarClaim.Cpf}'");
             var resultado = await _identidadeService.AdicionarClaims(adicionarClaim);
 
             if (!resultado)
             {
+                _logger.LogError($"Falha ao adicionar claim para o CPF '{adicionarClaim.Cpf}' ==> Não foi possível adicionar claim para este usuário");
                 AddErrorToStack("Não foi possível adicionar claim para este usuário");
                 return CustomResponse();
             }

@@ -9,7 +9,7 @@ using NetDevPack.Security.Jwt.Core.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace Corretora.Identidade.API.Application.Services
+namespace Corretora.Identidade.API.Services
 {
     public sealed class IdentidadeService : IIdentidadeService
     {
@@ -30,7 +30,7 @@ namespace Corretora.Identidade.API.Application.Services
             _contextAccessor = contextAccessor;
         }
 
-        public async Task<UsuarioResponstaLoginModel> GerarJwt(string cpf)
+        public async Task<UsuarioResponstaLoginModel> GerarJwtAsync(string cpf)
         {
             var usuario = await _userManager.FindByNameAsync(cpf);
             var claims = await _userManager.GetClaimsAsync(usuario);
