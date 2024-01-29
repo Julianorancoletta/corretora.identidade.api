@@ -95,7 +95,7 @@ namespace Corretora.Identidade.API.Services
                     Id = usuario.Id,
                     Cpf = usuario.UserName!,
                     Email = usuario.Email!,
-                    Claims = claims.Select(c => new UsuarioClaimModel { Tipo = c.Type, Valor = c.Value })
+                    Claims = claims.Select(c => new UsuarioClaimModel(c.Type, c.Value))
                 }
             };
         }
@@ -121,7 +121,7 @@ namespace Corretora.Identidade.API.Services
             return refreshToken;
         }
 
-        public async Task<RefreshToken?> ObterRedreshToken(Guid refreshToken)
+        public async Task<RefreshToken?> ObterRedreshTokenAsync(Guid refreshToken)
         {
             var token = await _refreshTokenRepository.GetRefreshTokenByTokenAsync(refreshToken);
 
@@ -130,7 +130,7 @@ namespace Corretora.Identidade.API.Services
                 : null;
         }
 
-        public async Task<bool> AdicionarClaims(AdicionarClaimModel adicionarClaim)
+        public async Task<bool> AdicionarClaimsAsync(AdicionarClaimModel adicionarClaim)
         {
             var usuario = await _userManager.FindByNameAsync(adicionarClaim.Cpf);
 

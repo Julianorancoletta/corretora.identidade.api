@@ -7,6 +7,14 @@ namespace Corretora.Identidade.API.Models
     [ExcludeFromCodeCoverage]
     public sealed class RegistrarUsuarioModel
     {
+        public RegistrarUsuarioModel(string? cpf, string? email, string? senha, string? senhaConfirmacao)
+        {
+            Cpf = cpf;
+            Email = email;
+            Senha = senha;
+            SenhaConfirmacao = senhaConfirmacao;
+        }
+
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
         [Cpf(ErrorMessage = "O campo {0} está em formato inválido")]
         public string? Cpf { get; init; }

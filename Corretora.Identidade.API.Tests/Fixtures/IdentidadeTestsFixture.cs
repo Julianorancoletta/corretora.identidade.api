@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using Bogus.DataSets;
 using System.Diagnostics.CodeAnalysis;
+using DataAnnotations = System.ComponentModel.DataAnnotations;
 
 namespace Corretora.Identidade.API.Tests.Fixtures
 {
@@ -36,6 +37,36 @@ namespace Corretora.Identidade.API.Tests.Fixtures
             cpf += CalcularModulo11Cpf(cpf, 10);
 
             return cpf;
+        }
+
+        public static string GerarCpfComPrimeiroDigitoZero()
+        {
+            Random random = new Random();
+            var cpfDigits = Enumerable.Range(0, 8)
+                .Select(_ => random.Next(10))
+                .ToArray();
+            cpfDigits = new[] { 0 }.Concat(cpfDigits).ToArray();
+
+            var cpf = string.Join("", cpfDigits);
+
+            cpf += CalcularModulo11Cpf(cpf, 9);
+            cpf += CalcularModulo11Cpf(cpf, 10);
+
+            return cpf;
+        }
+
+        public static void SetProtectedProperty<TObject, TValue>(string nomePropriedade, TObject objeto,TValue value)
+        {
+            var propertyInfo = typeof(TObject).GetProperty(nomePropriedade);
+            propertyInfo?.SetValue(objeto, value);
+        }
+
+        public static IList<DataAnnotations.ValidationResult> SimularValidacaoModel(object model)
+        {
+            var validationContext = new DataAnnotations.ValidationContext(model, null, null);
+            var validationResults = new List<DataAnnotations.ValidationResult>();
+            DataAnnotations.Validator.TryValidateObject(model, validationContext, validationResults, true);
+            return validationResults;
         }
 
         private static int CalcularModulo11Cpf(string cpf, int position)
