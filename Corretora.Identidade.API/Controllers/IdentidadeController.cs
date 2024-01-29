@@ -94,7 +94,7 @@ namespace Corretora.Identidade.API.Controllers
                 return CustomResponse();
             }
 
-            var token = await _identidadeService.ObterRedreshToken(Guid.Parse(refreshToken));
+            var token = await _identidadeService.ObterRedreshTokenAsync(Guid.Parse(refreshToken));
             _logger.LogInformation($"Refreshtoken usuário de nome '{token?.NomeUsuario}'");
 
             if (token == null)
@@ -113,10 +113,10 @@ namespace Corretora.Identidade.API.Controllers
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> AdicionarClaims(AdicionarClaimModel adicionarClaim)
+        public async Task<IActionResult> AdicionarClaimsAsync(AdicionarClaimModel adicionarClaim)
         {
             _logger.LogInformation($"Adicionando claim para o CPF '{adicionarClaim.Cpf}'");
-            var resultado = await _identidadeService.AdicionarClaims(adicionarClaim);
+            var resultado = await _identidadeService.AdicionarClaimsAsync(adicionarClaim);
 
             if (!resultado)
             {
@@ -125,6 +125,15 @@ namespace Corretora.Identidade.API.Controllers
                 return CustomResponse();
             }
 
+            return NoContent();
+        }
+
+        [HttpGet("validar-token")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public IActionResult ValidarToken()
+        {
             return NoContent();
         }
     }
