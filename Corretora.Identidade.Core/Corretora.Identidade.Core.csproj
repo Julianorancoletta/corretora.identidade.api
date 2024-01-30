@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Delivery.Core" Version="2.0.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.1" />
+        <PackageReference Include="NetDevPack.Security.Jwt.AspNetCore" Version="7.1.3" />
+        <PackageReference Include="NetDevPack.Security.Jwt.Store.EntityFrameworkCore" Version="7.1.3" />
+        <PackageReference Include="WebAPI" Version="2.0.1" />
+        <!--<PackageReference Include="NetDevPack.Security.JwtSigningCredentials.AspNetCore" Version="1.0.3" />
+        <PackageReference Include="NetDevPack.Security.JwtSigningCredentials.Store.EntityFrameworkCore" Version="1.0.3" />-->
+        <!--<PackageReference Include="WebAPI" Version="2.0.0" />-->
+    </ItemGroup>
+
+</Project>
