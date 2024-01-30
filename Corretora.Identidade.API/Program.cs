@@ -1,5 +1,6 @@
 using Corretora.Identidade.API.Configuration;
 using Delivery.WebAPI.Configuration;
+using Delivery.WebAPI.Core.Identity;
 using Serilog;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
@@ -15,6 +16,7 @@ namespace Corretora.Identidade.API
             builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
                     loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
             builder.Services.AddIdentityConfiguration(builder.Configuration);
+            builder.Services.AddJwtAsyncKeyConfigurationIdentidade(builder.Configuration);
             builder.Services.AddApiConfiguration();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerConfiguration(new(
