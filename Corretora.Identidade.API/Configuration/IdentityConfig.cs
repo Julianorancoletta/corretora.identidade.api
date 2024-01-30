@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Diagnostics.CodeAnalysis;
 using Corretora.Identidade.API.Extensions;
 using System.Text;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Corretora.Identidade.API.Configuration
 {
@@ -34,31 +35,56 @@ namespace Corretora.Identidade.API.Configuration
 
         public static void AddJwtAsyncKeyConfigurationIdentidade(this IServiceCollection services, IConfiguration configuration)
         {
-            IConfigurationSection section = configuration.GetSection("JwtSettings");
-            services.Configure<AppSettings>(section);
-            var jwtSettings = section.Get<AppSettings>();
-            if (jwtSettings == null)
-            {
-                throw new ArgumentNullException("jwtSettings", "Configuração de JWT não informada, necessário informar JwtSettings");
-            }
+            //
+            //services.Configure<AppSettings>(section);
+            //var jwtSettings = section.Get<AppSettings>();
+            //if (jwtSettings == null)
+            //{
+            //    throw new ArgumentNullException("jwtSettings", "Configuração de JWT não informada, necessário informar JwtSettings");
+            //}
 
-            services.AddAuthentication(delegate (AuthenticationOptions o)
+            //services.AddAuthentication(delegate (AuthenticationOptions o)
+            //{
+            //    o.DefaultAuthenticateScheme = "Bearer";
+            //    o.DefaultChallengeScheme = "Bearer";
+            //}).AddJwtBearer(delegate (JwtBearerOptions bearerOptions)
+            //{
+            //    bearerOptions.RequireHttpsMetadata = true;
+            //    bearerOptions.SaveToken = true;
+            //    //bearerOptions.SetJwksOptions(teste);
+            //    bearerOptions.TokenValidationParameters = new TokenValidationParameters
+            //    {
+            //        ValidateIssuerSigningKey = true,
+            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
+            //        ValidateIssuer = true,
+            //        ValidateAudience = false,
+            //        ValidAudience = jwtSettings.ValidoEm,
+            //        ValidIssuer = jwtSettings.Emissor
+            //    };
+            //});
+
+            var appSettingsSection = configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+
+            services.AddAuthentication(x =>
             {
-                o.DefaultAuthenticateScheme = "Bearer";
-                o.DefaultChallengeScheme = "Bearer";
-            }).AddJwtBearer(delegate (JwtBearerOptions bearerOptions)
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
             {
-                bearerOptions.RequireHttpsMetadata = true;
-                bearerOptions.SaveToken = true;
-                //bearerOptions.SetJwksOptions(teste);
-                bearerOptions.TokenValidationParameters = new TokenValidationParameters
+                x.RequireHttpsMetadata = true;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = true,
                     ValidateAudience = false,
-                    ValidAudience = jwtSettings.ValidoEm,
-                    ValidIssuer = jwtSettings.Emissor
+                    ValidAudience = appSettings.ValidoEm,
+                    ValidIssuer = appSettings.Emissor
                 };
             });
         }
