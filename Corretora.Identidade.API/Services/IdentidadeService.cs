@@ -36,7 +36,7 @@ namespace Corretora.Identidade.API.Services
             var claims = await _userManager.GetClaimsAsync(usuario);
 
             var identityClaims = await ObterClaimsUsuario(claims, usuario);
-            var accessToken = await ObterAccessToken(identityClaims);
+            var accessToken = await GerarToken(identityClaims);
 
             var refreshToken = await GerarRefreshToken(cpf);
 
@@ -47,8 +47,7 @@ namespace Corretora.Identidade.API.Services
         {
             var roles = await _userManager.GetRolesAsync(usuario);
 
-            claims.Add(new Claim(JwtRegisteredClaimNames.Sub, usuario.Id));
-            claims.Add(new Claim(JwtRegisteredClaimNames.Sub, usuario.Id));
+            claims.Add(new Claim(JwtRegisteredClaimNames.UniqueName, usuario.Id));
             claims.Add(new Claim(JwtRegisteredClaimNames.Email, usuario.Email));
             claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
             claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, ToUnixEpochDate(DateTime.UtcNow).ToString()));
@@ -64,23 +63,20 @@ namespace Corretora.Identidade.API.Services
             return identityClaims;
         }
 
-        private async Task<string> ObterAccessToken(ClaimsIdentity identityClaims)
+        private async Task<string> GerarToken(ClaimsIdentity identityClaims)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-
-            var emissorAtual = $"{_contextAccessor.HttpContext.Request.Scheme}://{_contextAccessor.HttpContext.Request.Host}";
-
             var key = await _jwksService.GetCurrentSigningCredentials();
 
-            var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Issuer = emissorAtual,
                 Subject = identityClaims,
                 Expires = DateTime.UtcNow.AddHours(1),
+                Issuer = $"{_contextAccessor.HttpContext.Request.Scheme}://{_contextAccessor.HttpContext.Request.Host}",
                 SigningCredentials = key
-            });
+            };
 
-            return tokenHandler.WriteToken(token);
+            return tokenHandler.CreateEncodedJwt(tokenDescriptor);
         }
 
         private UsuarioResponstaLoginModel ObterRespostaToken(string accessToken, IdentityUser usuario, IEnumerable<Claim> claims, RefreshToken refreshToken)
