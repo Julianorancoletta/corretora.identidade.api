@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Corretora.Identidade.API.Controllers
 {
+    [Authorize]
     [Route("api/[Controller]")]
     public sealed class IdentidadeController : MainController
     {
@@ -106,7 +107,6 @@ namespace Corretora.Identidade.API.Controllers
             return CustomResponse(await _identidadeService.GerarJwtAsync(token.NomeUsuario!));
         }
 
-        [Authorize]
         [ClaimsAuthorize("Identidade", "Admin")]
         [HttpPost("adicionar-claims")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -128,7 +128,6 @@ namespace Corretora.Identidade.API.Controllers
             return NoContent();
         }
 
-        [Authorize]
         [HttpGet("validar-token")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]

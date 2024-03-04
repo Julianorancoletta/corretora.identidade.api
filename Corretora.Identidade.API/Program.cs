@@ -16,7 +16,7 @@ namespace Corretora.Identidade.API
             builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
                     loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
             builder.Services.AddIdentityConfiguration(builder.Configuration);
-            builder.Services.AddJwtAsyncKeyConfigurationIdentidade(builder.Configuration);
+            builder.Services.AddJwtAsyncKeyConfiguration(builder.Configuration);
             builder.Services.AddApiConfiguration();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerConfiguration(new(
